@@ -1,65 +1,14 @@
 import csv
 
-def myprint(x):
-	print x
-
-solutions=[]
+# define your scoring approach here
+# values should be numeric
 right=2
 wrong=-1
 blank=0
 
-with open("rubric.csv",'rb') as infile:
-	csv_reader = csv.reader(infile)
-	header=None
-	for row in csv_reader:
-		if not header:
-			header = row
-		else:
-			solutions.append(row)
-	
-answers=[]
-	
-with open("answers.csv",'rb') as infile:
-	csv_reader = csv.reader(infile)
-	header=None
-	for row in csv_reader:
-		if not header:
-			header = row
-		else:
-			answers.append(row)
-
-
-grades=[]
-freebies=[50] #these are questions I decided no one got right, so I nixxed them.
-
-for answer in answers:
-	student_rec = []
-	student_rec.append(answer[0])
-	print "Grading student: ",answer[0]
-	for i in range(2,len(answer)):
- 		print solutions[0][i],"---------", answer[i]
-		if i in freebies:
-			student_rec.append(right)
-		elif solutions[0][i]==answer[i]:
-			student_rec.append(right)
-		elif answer[i]=="BLANK":
-			student_rec.append(blank)	
-		else:
-			student_rec.append(wrong)
-		
-# 	print solution
-# 	print answer
-# 	print student_rec
-	grades.append(student_rec)
-	
-# print "-----"
-	
-# for grade in grades:
-# 	print grade
-	
-	
-questions=[] #these are question blocks -- so 1-4 was one question, 5-7 was another question, etc.
+# these are question blocks -- so 1-4 was one question, 5-7 was another question, etc.
 # basically, boundaries of how far negative marks can go.
+questions=[] 
 questions.append([1,5])
 questions.append([6,10])
 questions.append([11,14])
@@ -73,8 +22,59 @@ questions.append([39,41])
 questions.append([42,45])
 questions.append([46,50])
 
-marks = []
+# define the questions you wish to give free marks for here
+# e.g., questions that in retrospect were in error (e.g., [] or [12] or [1, 24]).
+freebies=[50]
 
+def myprint(x):
+	print x
+
+solutions=[]
+with open("rubric.csv",'rb') as infile:
+	csv_reader = csv.reader(infile)
+	header=None
+	for row in csv_reader:
+		if not header:
+			header = row
+		else:
+			solutions.append(row)
+	
+answers=[]
+with open("answers.csv",'rb') as infile:
+	csv_reader = csv.reader(infile)
+	header=None
+	for row in csv_reader:
+		if not header:
+			header = row
+		else:
+			answers.append(row)
+
+
+grades=[]
+for answer in answers:
+	student_rec = []
+	student_rec.append(answer[0])
+	print "Grading student: ",answer[0]
+	for i in range(2,len(answer)):
+ 		print solutions[0][i],"---------", answer[i]
+		if i in freebies:
+			student_rec.append(right)
+		elif solutions[0][i]==answer[i]:
+			student_rec.append(right)
+		elif answer[i]=="BLANK":
+			student_rec.append(blank)
+		else:
+			student_rec.append(wrong)
+# 	print solution
+# 	print answer
+# 	print student_rec
+	grades.append(student_rec)
+
+# print "-----"
+# for grade in grades:
+# 	print grade
+
+marks = []
 for grade in grades:
 	student_mark = []
 	student_mark.append(grade[0])
@@ -94,7 +94,6 @@ for grade in grades:
 # for mark in marks:
 # 	print mark
 
-
 totals = []
 the_total=0
 for mark in marks:
@@ -108,8 +107,6 @@ for mark in marks:
 	the_total=the_total+float(sum)
 # 	print "the total: ", the_total
 
-	
-	
 for i in range(0,len(grades)):
 # 	print "======"
 # 	print solution
@@ -117,10 +114,8 @@ for i in range(0,len(grades)):
 # 	print grades[i]
 # 	print marks[i]
 	print "totals: " , totals[i]
-	
-	
-# print "AVERAGE: ",str(average)
 
+# print "AVERAGE: ",str(average)
 
 results_header = ['username', 'exam type', 'points', 'Final Exam [Total Pts: 40] |1742451']
 with open("results.csv", 'wb') as out_file:
@@ -141,5 +136,4 @@ with open("individualgrades.csv", 'wb') as out_file:
     csv_writer.writerow(results_header)
     for grade in grades:
         csv_writer.writerow(grade)
-
 
