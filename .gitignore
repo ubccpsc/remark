@@ -1,3 +1,9 @@
+# make sure we never store any student data
+.csv
+.xls
+.xlsx
+.numbers
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
