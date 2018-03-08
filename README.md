@@ -12,7 +12,11 @@ To invoke the script, simply call the student spreadsheet `answers.csv` and your
 
 ## Analysis
 
-TBD
+* `results.csv` contains the exam grades.
+
+* `individualgrades.csv` can be used to generate per-question statistics for an exam. For example, you could add a formula row across all columns that contains `XXX`; this would give you the class percentage on each question (% that got it right out of the class, this ignores any penalties etc).
+
+* `questionmarks.csv` contains the scores for the grouped questions.
 
 ## Tips
 
