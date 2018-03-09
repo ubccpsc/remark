@@ -91,8 +91,9 @@ for grade in grades:
 		student_mark.append(qmark)
 	marks.append(student_mark)
 	
-# for mark in marks:
-# 	print mark
+# print out the grouped marks	
+for mark in marks:
+	print "grouped marks: "+str(mark)
 
 totals = []
 the_total=0
@@ -107,6 +108,8 @@ for mark in marks:
 	the_total=the_total+float(sum)
 # 	print "the total: ", the_total
 
+totaltotal=0 #setup the total total for the sake of averaging later
+
 for i in range(0,len(grades)):
 # 	print "======"
 # 	print solution
@@ -114,6 +117,9 @@ for i in range(0,len(grades)):
 # 	print grades[i]
 # 	print marks[i]
 	print "totals: " , totals[i]
+	totaltotal+=totals[i][1]  #incrementally tally for the sake of averaging
+
+print "AVERAGE: ",str(totaltotal/len(totals)) #and compute the average
 
 # print "AVERAGE: ",str(average)
 
