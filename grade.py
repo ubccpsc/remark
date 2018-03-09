@@ -57,7 +57,7 @@ for answer in answers:
 	print "Grading student: ",answer[0]
 	for i in range(2,len(answer)):
  		print solutions[0][i],"---------", answer[i]
-		if i in freebies:
+		if i+1 in freebies: #added the offset for the freebies
 			student_rec.append(right)
 		elif solutions[0][i]==answer[i]:
 			student_rec.append(right)
