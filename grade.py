@@ -29,9 +29,9 @@ questionbounds = {
 
 # list of questions to skip grading (aka pretend they don't exist)
 skipgrades={
-	'A':[],
-	'B':[],
-	'X':[]
+	'A':[37, 41],
+	'B':[1, 5],
+	'X':[37, 41]
 }
 
 SNUMtoCSID={}
@@ -62,7 +62,7 @@ with open("rubricAB.csv",'rU') as infile:
 		print "grading key is: "+str(row)
 		if not header:
 			header = row
-			# print "header is: "+str(row)
+			print "rubric header is: "+str(row)
 		if not row[0] in solutions:
 			solutions[row[0]] = row[1:]
 
@@ -77,6 +77,7 @@ with open("realanswers.csv",'rU') as infile:
 	for row in csv_reader:
 		if not header:
 			header = row
+			print "answers header is: "+str(row)
 		else:
 			answers.append(row)
 
