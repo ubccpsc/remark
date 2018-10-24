@@ -19,10 +19,12 @@ testlength=50
 # number of points to adjust the exam (raw score)
 gradeadjustment=0
 
+# if points don't roll over, specify question boundary
+# start at 1, end at n+1
 questionbounds = {
-	'A':[1,5,8,12,16,19,23,27,31,37,42,47,50],
-	'B':[1,6,11,15,19,22,26,30,34,40,44,47,50],
-	'X':[1,5,8,12,16,19,23,27,31,37,42,47,50]
+	'A':[1,5,8,12,16,19,23,27,31,37,42,47,51],
+	'B':[1,6,11,15,19,22,26,30,34,40,44,47,51],
+	'X':[1,5,8,12,16,19,23,27,31,37,42,47,51]
 }
 
 # list of questions to skip grading (aka pretend they don't exist)
@@ -183,10 +185,8 @@ cvsexport('grades.csv',grades,["SNUM","CSID","Name","Key"]+questionsheader)
 total=0
 for t in totals:
 	total += t[1]
-	
-	
+
+
 print "AVERAGE: ",str(total/len(totals)/testlength)
 
 
-
-	
