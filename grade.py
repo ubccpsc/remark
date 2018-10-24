@@ -8,6 +8,8 @@ students={}
 
 # score for a right answer
 right=2
+# score for a freebie
+freebie=2
 # score for a wrong answer
 wrong=-1
 # score for a blank answer
@@ -95,25 +97,22 @@ for answer in answers:
 
 	for i,(k,a) in enumerate(zip(key,sanswer)):
 		if i+1 in skipgrades[answer[1]]:
-			student_rec.append(1)
-			print ">>>>>>>>>>>SKIPPED"			
+			student_rec.append(freebie) # the answer is a freebie
+			print ">>>>>>>>>>>SKIPPED"
 		elif k=="x":
-			student_rec.append(1)
+			student_rec.append(freebie) # the answer is a freebie (x in sheet instead of in freebie list)
 		elif a == "BLANK":
-			student_rec.append(0)
+			student_rec.append(blank) # the answer is blank
 		elif k==a:
-			student_rec.append(1)
+			student_rec.append(right) # the answer is right
 		else:
-			student_rec.append(-.5)
-
+			student_rec.append(wrong) # the answer is wrong
 
 	grades.append(student_rec)
 
-	
-	
+
 for grade in grades:
 	print grade
-	
 
 
 marks = []
@@ -187,7 +186,14 @@ total=0
 for t in totals:
 	total += t[1]
 
+numerator=total/len(totals)
+denominator=testlength*right
 
-print "AVERAGE: ",str(total/len(totals)/testlength)
+#print "total: ",str(total)
+#print "totals: ",str(len(totals))
 
+#print "numerator: ",str(numerator)
 
+#print "denominator: ",str(denominator)
+
+print "AVERAGE: ",str( (float(numerator)/denominator) * 100)
