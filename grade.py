@@ -93,7 +93,7 @@ for answer in answers:
 	print "Comparing against "+str(answer[1])+":"+str(key)
 
 	for i,(k,a) in enumerate(zip(key,sanswer)):
-		if i-1 in skipgrades[answer[1]]:
+		if i+1 in skipgrades[answer[1]]:
 			student_rec.append(1)
 			print ">>>>>>>>>>>SKIPPED"			
 		elif k=="x":
