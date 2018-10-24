@@ -1,46 +1,75 @@
 import csv
 
-# define your scoring approach here
-# values should be numeric
-right=2
-wrong=-1
-blank=0
-
-# these are question blocks -- so 1-4 was one question, 5-7 was another question, etc.
-# basically, boundaries of how far negative marks can go.
-questions=[] 
-questions.append([1,5])
-questions.append([6,10])
-questions.append([11,14])
-questions.append([15,18])
-questions.append([19,21])
-questions.append([22,25])
-questions.append([26,31])
-questions.append([32,35])
-questions.append([36,38])
-questions.append([39,41])
-questions.append([42,45])
-questions.append([46,50])
-
-# define the questions you wish to give free marks for here
-# e.g., questions that in retrospect were in error (e.g., [] or [12] or [1, 24]).
-freebies=[50]
-
 def myprint(x):
 	print x
 
-solutions=[]
-with open("rubric.csv",'rb') as infile:
+solutions={}
+students={}
+
+# score for a right answer
+right=2
+# score for a wrong answer
+wrong=-1
+# score for a blank answer
+blank=0
+
+# number of questions
+testlength=50
+
+# number of points to adjust the exam (raw score)
+gradeadjustment=0
+
+questionbounds = {
+	'A':[1,5,8,12,16,19,23,27,31,37,42,47,50],
+	'B':[1,6,11,15,19,22,26,30,34,40,44,47,50],
+	'X':[1,5,8,12,16,19,23,27,31,37,42,47,50]
+}
+
+# list of questions to skip grading (aka pretend they don't exist)
+skipgrades={
+	'A':[],
+	'B':[],
+	'X':[]
+}
+
+SNUMtoCSID={}
+SNUMtoName={}
+
+# get classlist (change XXX to you're corse number e.g., 310):
+# ssh remote.cs.ubc.ca '/cs/local/bin/classlist -T -L -f "\"%LN, %FN\",%SN,%ACCT" XXX' > classlist.csv
+
+with open("classlist.csv",'rb') as infile:
 	csv_reader = csv.reader(infile)
 	header=None
 	for row in csv_reader:
+		# print "grading key is: "+str(row)
 		if not header:
 			header = row
-		else:
-			solutions.append(row)
-	
+			# print "header is: "+str(row)
+		if not row[0] in solutions:
+			SNUMtoCSID[row[1]] = row[2]
+			SNUMtoName[row[1]] = row[0]
+
+
+#rubric schema: rubricID , 1...n
+
+with open("rubricAB.csv",'rU') as infile:
+	csv_reader = csv.reader(infile)
+	header=None
+	for row in csv_reader:
+		print "grading key is: "+str(row)
+		if not header:
+			header = row
+			# print "header is: "+str(row)
+		if not row[0] in solutions:
+			solutions[row[0]] = row[1:]
+
+#print "all solutions is: "+str(solutions)
+
+
 answers=[]
-with open("answers.csv",'rb') as infile:
+	
+with open("realanswers.csv",'rU') as infile:
 	csv_reader = csv.reader(infile)
 	header=None
 	for row in csv_reader:
@@ -51,49 +80,70 @@ with open("answers.csv",'rb') as infile:
 
 
 grades=[]
+
 for answer in answers:
 	student_rec = []
-	student_rec.append(answer[0])
-	print "Grading student: ",answer[0]
-	for i in range(2,len(answer)):
- 		print solutions[0][i],"---------", answer[i]
-		if i+1 in freebies: #added the offset for the freebies
-			student_rec.append(right)
-		elif solutions[0][i]==answer[i]:
-			student_rec.append(right)
-		elif answer[i]=="BLANK":
-			student_rec.append(blank)
+	student_rec.append(answer[0]) #keep track of their SNUM
+	student_rec.append(answer[1]) #keep track of their key
+	print "Grading student: ",answer
+	key = solutions[answer[1]]
+	sanswer = answer[2:]
+	print "Comparing against "+str(answer[1])+":"+str(key)
+
+	for i,(k,a) in enumerate(zip(key,sanswer)):
+		if i-1 in skipgrades[answer[1]]:
+			student_rec.append(1)
+			print ">>>>>>>>>>>SKIPPED"			
+		elif k=="x":
+			student_rec.append(1)
+		elif a == "BLANK":
+			student_rec.append(0)
+		elif k==a:
+			student_rec.append(1)
 		else:
-			student_rec.append(wrong)
-# 	print solution
-# 	print answer
-# 	print student_rec
+			student_rec.append(-.5)
+
+
 	grades.append(student_rec)
 
-# print "-----"
-# for grade in grades:
-# 	print grade
+	
+	
+for grade in grades:
+	print grade
+	
+
 
 marks = []
+
 for grade in grades:
 	student_mark = []
-	student_mark.append(grade[0])
+	key=grade[1]
+	snum=grade[0]
+	student_mark.append(snum)
+	student_mark.append(key)
 	print grade
-	for question in questions:
-# 		print "question is: ",question
+	bounds=questionbounds[grade[1]]
+	sgrades=grade[2:]
+	print "len sgrades"
+	print len(sgrades)
+	for i in range(0,len(bounds)):
+		print "bounds index is: "+str(i)+" at question "+str(bounds[i])
+		if bounds[i]>=testlength:
+			break
+		# print "question is: ",question
 		qmark = 0
-		for i in range(question[0],question[1]+1):
-# 			print str(i-1),":",grade[i], "...", header[i]
-			qmark = qmark+grade[i]
-# 		print "Qmark: ",qmark
+		for j in range(bounds[i],bounds[i+1]):
+			qmark = qmark+sgrades[j-1]  #question bounds are indexed from 1 so must subtract 1
+			print j
+		print "Qmark: ",qmark
 		if qmark<0:
 			qmark=0
 		student_mark.append(qmark)
 	marks.append(student_mark)
 	
-# print out the grouped marks	
 for mark in marks:
-	print "grouped marks: "+str(mark)
+	print mark
+
 
 totals = []
 the_total=0
@@ -101,45 +151,42 @@ for mark in marks:
 	student_total=[]
 	student_total.append(mark[0])
 	sum=0
-	for i in range(1,len(mark)):
+	for i in range(2,len(mark)):
 		sum=sum+mark[i]
-	student_total.append(sum)
+	student_total.append(sum+gradeadjustment)
 	totals.append(student_total)
 	the_total=the_total+float(sum)
 # 	print "the total: ", the_total
 
-totaltotal=0 #setup the total total for the sake of averaging later
 
-for i in range(0,len(grades)):
-# 	print "======"
-# 	print solution
-# 	print answers[i]
-# 	print grades[i]
-# 	print marks[i]
-	print "totals: " , totals[i]
-	totaltotal+=totals[i][1]  #incrementally tally for the sake of averaging
+def cvsexport(name,records,header):
+	with open(name,'wb') as out_file:
+		csvwriter = csv.writer(out_file)
+		csvwriter.writerow(header)
+		for i in range(0,len(grades)):
+			outrow=[]
+			outrow.append(records[i][0])
+			outrow.append(SNUMtoCSID[records[i][0]])
+			outrow.append(SNUMtoName[records[i][0]])
+			outrow=outrow+records[i][1:]
+			# csvwriter.writerow(records[i])
+			csvwriter.writerow(outrow)
 
-print "AVERAGE: ",str(totaltotal/len(totals)) #and compute the average
+cvsexport('totals.csv',totals,["SNUM","CSID","Name","Grade"])
+marksheader=[i for i in range(0,len(marks[0]))]
+cvsexport('qmarks.csv',marks,["SNUM","CSID","Name","Key"]+marksheader)
+questionsheader=[i for i in range(1,testlength)]
+cvsexport('grades.csv',grades,["SNUM","CSID","Name","Key"]+questionsheader)
 
-# print "AVERAGE: ",str(average)
 
-results_header = ['username', 'exam type', 'points', 'Final Exam [Total Pts: 40] |1742451']
-with open("results.csv", 'wb') as out_file:
-    csv_writer = csv.writer(out_file)
-    csv_writer.writerow(results_header)
-    for total in totals:
-        csv_writer.writerow(total)
 
-results_header = ['username','put one column per question']
-with open("questionmarks.csv", 'wb') as out_file:
-    csv_writer = csv.writer(out_file)
-    csv_writer.writerow(results_header)
-    for mark in marks:
-        csv_writer.writerow(mark)
+total=0
+for t in totals:
+	total += t[1]
+	
+	
+print "AVERAGE: ",str(total/len(totals)/testlength)
 
-with open("individualgrades.csv", 'wb') as out_file:
-    csv_writer = csv.writer(out_file)
-    csv_writer.writerow(results_header)
-    for grade in grades:
-        csv_writer.writerow(grade)
 
+
+	
