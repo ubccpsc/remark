@@ -93,10 +93,9 @@ for snum in snum_to_csid:
 	handback.startTableRow()
 	handback.writeCell("Midterm grade: "+str(midterm)+"/"+str(testlength*2)+''
 		# 'https://www.ugrad.cs.ubc.ca/~cs410/handback/index2.php?file=CPSC410-2018WT1-MT1/CPSC410-2018WT1-MT1-63522163-ebani.pdf'
-		' | <a href="https://www.ugrad.cs.ubc.ca/~cs310/handback/index2.php">Your scanned answer sheet</a>'
-		' | <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSFJXhZOkBJvRbon1ejaprPpF0OWQrSP3Le5lzgBXB9hptY7frJKKsRYChM_2vHvQ8o2wAoqUFSdBwo/pubhtml">Grading key</a>'
-		' | Your grading key was: '+key+' -- Please look in the correct column for question numbers!!'
-		' -- please check the grading key for discarded questions')
+		' <br/> <a href="https://www.ugrad.cs.ubc.ca/~cs310/handback/index2.php">Your scanned answer sheet</a>'
+		' | <a href="https://docs.google.com/spreadsheets/d/1ULfBdS4V4hgD1aHsHl0_8fky9shY3kdYHEY1QWYkQ9w/edit?usp=sharing">Grading key</a>'
+		' <br/> Your exam version was: '+key+' -- Please look in the correct column for question numbers!!')
 	handback.endTableRow()
 	handback.endTable()
 
